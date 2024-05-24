@@ -71,7 +71,7 @@ exports.createInspectionReport = async (req, res) => {
 
     const detectImage = async (imageForm) => {
       return await axios.post(
-        "http://137.184.185.56:5000/v1/inspection/best",
+        "http://137.184.185.56:8000/v1/inspection/best",
         imageForm,
         {
           headers: {
