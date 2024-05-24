@@ -111,7 +111,7 @@ exports.createDailyCupReport = async (req, res) => {
 
     const detectImage = async (imageForm) => {
       const response = await axios.post(
-        "http://137.184.185.56:5000/v1/dailycheckup/best",
+        "http://137.184.185.56:8000/v1/dailycheckup/best",
         imageForm,
         {
           headers: imageForm.getHeaders(),
