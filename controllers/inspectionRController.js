@@ -19,7 +19,7 @@ const prepareImageForm = (file) => {
 const detectImage = async (imageForm) => {
   try {
     const response = await axios.post(
-      "http://localhost:5000/v1/inspection/best",
+      "137.184.185.56:8000/v1/inspection/best",
       imageForm,
       {
         headers: { ...imageForm.getHeaders() },
