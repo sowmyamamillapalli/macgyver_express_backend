@@ -7,22 +7,22 @@ const inspectionReportSchema = new mongoose.Schema({
   },
   radiator_cleanliness: {
     type: String,
-    enum: ["clean", "dirty", "very dirty", "NA"],
+    enum: ["clean", "dirty", "damaged", "undamaged", "NA"],
     default: "NA",
   },
-  radiator_bent_fins: {
+  check_coolant_level: {
     type: String,
-    enum: ["ok", "few bends", "very bent", "NA"],
+    enum: ["ok", "close to minimum", "below minimum", "NA"],
     default: "NA",
   },
-  tightness_of_belts: {
+  check_fan_blades_wear: {
     type: String,
-    enum: ["ok", "loose", "worn", "NA"],
+    enum: ["ok", "worn", "damaged", "NA"],
     default: "NA",
   },
-  rolling_bearings: {
+  check_fan_function: {
     type: String,
-    enum: ["ok", "some resistance", "catching", "NA"],
+    enum: ["good", "poor airflow", "fan not spinning", "NA"],
     default: "NA",
   },
   coolant_leaks: {
@@ -32,7 +32,7 @@ const inspectionReportSchema = new mongoose.Schema({
   },
   odd_water_pump_sound: {
     type: String,
-    enum: ["No", "possibly", "yes", "NA"],
+    enum: ["no", "possibly", "yes", "NA"],
     default: "NA",
   },
   fan_spinning_correctly: {
@@ -40,16 +40,24 @@ const inspectionReportSchema = new mongoose.Schema({
     enum: ["ok", "coolant droplets", "clear leak", "NA"],
     default: "NA",
   },
-  radiator_image_before: {
-    type: String
+  Analysed_coolant_label: {
+    type: String,
+    default: "NA",
   },
-  belt_image_before: {
-    type: String
+  Analysed_radiator_label: {
+    type: String,
+    default: "NA",
+  },
+  radiator_image_before: {
+    type: String,
+  },
+  coolant_image_before: {
+    type: String,
   },
   radiator_image_analyzed: {
     type: String,
   },
-  belt_image_analyzed: {
+  coolant_image_analyzed: {
     type: String,
   },
   extra_image: {

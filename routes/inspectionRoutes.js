@@ -17,7 +17,7 @@ router.post(
   "/create-inspection-report",
   upload.fields([
     { name: "radiator_image_before", maxCount: 1 },
-    { name: "belt_image_before", maxCount: 1 },
+    { name: "coolant_image_before", maxCount: 1 },
     { name: "extra_image", maxCount: 1 },
   ]),
   createInspectionReport

@@ -16,8 +16,6 @@ const router = express.Router();
 router.post(
   "/create-daily-checkup-report",
   upload.fields([
-    { name: "tracks_image_before", maxCount: 1 },
-    { name: "engine_coolant_image_before", maxCount: 1 },
     { name: "working_ground_image_before", maxCount: 1 },
   ]),
   createDailyCupReport
