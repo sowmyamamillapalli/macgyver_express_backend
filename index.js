@@ -16,6 +16,8 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());

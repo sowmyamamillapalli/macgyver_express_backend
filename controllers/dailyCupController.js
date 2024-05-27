@@ -30,6 +30,126 @@ exports.createDailyCupReport = async (req, res) => {
       );
     }
 
+    // Preprocess images before uploading and analysis
+    let tracksImageBuffer;
+    if (req.files.tracks_image_before) {
+      tracksImageBuffer = await preprocessImage(
+        req.files.tracks_image_before[0].buffer
+      );
+    }
+    let engineCoolantImageBuffer;
+    if (req.files.engine_coolant_image_before) {
+      engineCoolantImageBuffer = await preprocessImage(
+        req.files.engine_coolant_image_before[0].buffer
+      );
+    }
+    let workingGroundImageBuffer;
+    if (req.files.working_ground_image_before) {
+      workingGroundImageBuffer = await preprocessImage(
+        req.files.working_ground_image_before[0].buffer
+      );
+    }
+
+    const createImageForm = (buffer, originalname, mimetype) => {
+      const form = new FormData();
+      form.append("image", buffer, {
+        filename: originalname,
+        contentType: mimetype,
+      });
+      return form;
+    };
+
+    let tracksImageForm;
+    if (tracksImageBuffer) {
+      tracksImageForm = createImageForm(
+        tracksImageBuffer,
+        req.files.tracks_image_before[0].originalname,
+        req.files.tracks_image_before[0].mimetype
+      );
+    }
+    let engineCoolantForm;
+    if (engineCoolantImageBuffer) {
+      engineCoolantForm = createImageForm(
+        engineCoolantImageBuffer,
+        req.files.engine_coolant_image_before[0].originalname,
+        req.files.engine_coolant_image_before[0].mimetype
+      );
+    }
+    let workingGroundForm;
+    if (workingGroundImageBuffer) {
+      workingGroundForm = createImageForm(
+        workingGroundImageBuffer,
+        req.files.working_ground_image_before[0].originalname,
+        req.files.working_ground_image_before[0].mimetype
+      );
+    }
+
+    const detectImage = async (imageForm) => {
+      const response = await axios.post(
+        "http://localhost:8000/v1/dailycheckup/best",
+        imageForm,
+        {
+          headers: imageForm.getHeaders(),
+          responseType: "arraybuffer",
+        }
+      );
+      return response;
+    };
+
+    // Array to hold the promises for image analysis
+    const analysisPromises = [];
+    if (tracksImageForm) {
+      analysisPromises.push(detectImage(tracksImageForm));
+    }
+    if (engineCoolantForm) {
+      analysisPromises.push(detectImage(engineCoolantForm));
+    }
+    if (workingGroundForm) {
+      analysisPromises.push(detectImage(workingGroundForm));
+    }
+
+    const responses = await Promise.all(analysisPromises);
+
+    let analyzedTracksUrl = "";
+    let analyzedEngineUrl = "";
+    let analyzedWorkingGroundUrl = "";
+    if (tracksImageForm) {
+      const analyzedTracksImageBuffer = Buffer.from(
+        responses[0].data,
+        "binary"
+      );
+      analyzedTracksUrl = await uploadBufferToS3(
+        analyzedTracksImageBuffer,
+        `analyzed_${req.files.tracks_image_before[0].originalname}`,
+        imageDirectory
+      );
+    }
+    if (engineCoolantForm) {
+      const engineCoolantResponseIndex = tracksImageForm ? 1 : 0;
+      const analyzedCoolantImageBuffer = Buffer.from(
+        responses[engineCoolantResponseIndex].data,
+        "binary"
+      );
+      analyzedEngineUrl = await uploadBufferToS3(
+        analyzedCoolantImageBuffer,
+        `analyzed_${req.files.engine_coolant_image_before[0].originalname}`,
+        imageDirectory
+      );
+    }
+    if (workingGroundForm) {
+      const workingGroundResponseIndex =
+        (tracksImageForm ? 1 : 0) + (engineCoolantForm ? 1 : 0);
+      const analyzedWorkingGroundImageBuffer = Buffer.from(
+        responses[workingGroundResponseIndex].data,
+        "binary"
+      );
+      analyzedWorkingGroundUrl = await uploadBufferToS3(
+        analyzedWorkingGroundImageBuffer,
+        `analyzed_${req.files.working_ground_image_before[0].originalname}`,
+        imageDirectory
+      );
+    }
+
     // Create a new DailyCupReport document
     const dailyCupReport = new DailyCupReport({
       ...req.body,
