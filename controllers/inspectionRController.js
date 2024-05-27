@@ -104,7 +104,6 @@ exports.createInspectionReport = async (req, res) => {
         )
       : null;
 
-<<<<<<< HEAD
     const inspectionReportData = {
       ...req.body,
       radiator_image_before: results.radiator?.url || "",
@@ -114,42 +113,6 @@ exports.createInspectionReport = async (req, res) => {
       extra_image: extraImageUrl || null,
       Analysed_radiator_label: results.radiator?.prediction || "Unknown",
       Analysed_coolant_label: results.coolant?.prediction || "Unknown",
-=======
-    // Use the uploaded image URL for analysis
-    let radiatorImageForm;
-    if (req.files.radiator_image_before) {
-      radiatorImageForm = new FormData();
-      radiatorImageForm.append(
-        "image",
-        req.files.radiator_image_before[0].buffer,
-        {
-          filename: req.files.radiator_image_before[0].originalname,
-          contentType: req.files.radiator_image_before[0].mimetype,
-        }
-      );
-    }
-
-    let beltImageForm;
-    if (req.files.belt_image_before) {
-      beltImageForm = new FormData();
-      beltImageForm.append("image", req.files.belt_image_before[0].buffer, {
-        filename: req.files.belt_image_before[0].originalname,
-        contentType: req.files.belt_image_before[0].mimetype,
-      });
-    }
-
-    const detectImage = async (imageForm) => {
-      return await axios.post(
-        "http://137.184.185.56:5000/v1/inspection/best",
-        imageForm,
-        {
-          headers: {
-            ...imageForm.getHeaders(),
-          },
-          responseType: "arraybuffer", // Ensure response is in binary format for images
-        }
-      );
->>>>>>> 63f6b4ade8476d6ddb0a0b2ad328faae564fd9cb
     };
 
     const inspectionReport = new InspectionReport(inspectionReportData);
